@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/server";
 import { TriggerWordmark } from "../../../../components/logos/Trigger";
+import { stripMarkdown } from "@/lib/utils";
 
 // Route segment config
 export const runtime = "edge";
@@ -14,15 +15,42 @@ export const size = {
 export const contentType = "image/png";
 
 type Props = {
-  params: { owner: string; repo: string };
+  params: {
+    owner: string;
+    repo: string;
+    changelogId: number;
+  };
 };
 
 // Image generation
-export default async function OG({ params: { owner, repo } }: Props) {
-  // Font
+export default async function OG({
+  params: { owner, repo, changelogId },
+}: Props) {
+  // Fonts
   const poppinsSemiBold = fetch(
     new URL("/public/Poppins-SemiBold.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
+
+  const poppinsRegular = fetch(
+    new URL("/public/Poppins-Regular.ttf", import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
+  // Fetch changelog
+  const supabaseRestEndpoint = `https://${process.env.SUPABASE_ID}.supabase.co/rest/v1/changelogs`;
+  const supabaseParams = `?select=id,start_date,end_date,markdown,repo:repos(id,repo_url)&id=eq.${changelogId}`;
+
+  const changelogRecord = await fetch(supabaseRestEndpoint + supabaseParams, {
+    headers: {
+      apikey: process.env.SUPABASE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_KEY}`,
+    } as HeadersInit,
+  });
+
+  const records = await changelogRecord?.json();
+  const markdown = records?.[0]?.markdown;
+  const samples = markdown
+    ? stripMarkdown(markdown)?.split("\n").slice(1, 4)
+    : null;
 
   return new ImageResponse(
     (
@@ -69,6 +97,7 @@ export default async function OG({ params: { owner, repo } }: Props) {
               flexDirection: "column",
               letterSpacing: "-2px",
               paddingTop: "48px",
+              fontWeight: 600,
               gap: "4px",
             }}
           >
@@ -91,6 +120,16 @@ export default async function OG({ params: { owner, repo } }: Props) {
               {repo}
             </div>
           </div>
+          {samples && samples.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {samples?.map((sample, i) => (
+                <div key={i} style={{ display: "flex" }}>
+                  • {sample}
+                </div>
+              ))}
+              • ...
+            </div>
+          ) : null}
           <div
             style={{
               display: "flex",
@@ -108,6 +147,7 @@ export default async function OG({ params: { owner, repo } }: Props) {
                 background: "linear-gradient(90deg, #4F46E5 0%, #9333EA 100%)",
                 color: "transparent",
                 backgroundClip: "text",
+                fontWeight: 600,
               }}
             >
               AutoChangelog
@@ -177,9 +217,14 @@ export default async function OG({ params: { owner, repo } }: Props) {
       fonts: [
         {
           name: "poppins",
-          data: await poppinsSemiBold,
+          data: await poppinsRegular,
           style: "normal",
           weight: 400,
+        },
+        {
+          name: "poppins",
+          data: await poppinsSemiBold,
+          weight: 600,
         },
       ],
     }

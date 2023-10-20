@@ -61,7 +61,6 @@ export default async function OG({ params: { owner, repo } }: Props) {
             padding: "72px",
             alignItems: "flex-start",
             justifyContent: "space-between",
-            zIndex: 1,
           }}
         >
           <div

@@ -205,7 +205,8 @@ export default async function OG({
             src="https://github.com/tedspare/autochangelog/assets/36117635/d01e91fe-539b-479f-a613-133d6188e314"
             width="100%"
             style={{
-              boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+              opacity: "0.7",
+              boxShadow: "10px 10px 30px #00000099",
             }}
             alt="Screenshot of AutoChangelog UI"
           />

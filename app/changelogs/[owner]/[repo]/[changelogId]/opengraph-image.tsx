@@ -67,19 +67,26 @@ export default async function OG({ params: { owner, repo } }: Props) {
             style={{
               display: "flex",
               flexDirection: "column",
-              fontSize: 36,
               letterSpacing: "-2px",
               paddingTop: "48px",
               gap: "4px",
             }}
           >
             <div
-              style={{ display: "flex", lineHeight: "28px", color: "#64748B" }}
+              style={{
+                display: "flex",
+                fontSize: 40,
+                lineHeight: "28px",
+                color: "#64748B",
+              }}
             >
               {owner}/
             </div>
             <div
-              style={{ display: "flex", fontSize: repo.length > 16 ? 36 : 56 }}
+              style={{
+                display: "flex",
+                fontSize: repo.length > 16 ? 36 : 64,
+              }}
             >
               {repo}
             </div>
@@ -97,8 +104,8 @@ export default async function OG({ params: { owner, repo } }: Props) {
                 display: "block",
                 letterSpacing: "-2px",
                 fontSize: 36,
-                // gradient background from indigo to purple:
-                background: "linear-gradient(90deg, #4338CA 0%, #7E22CE 100%)",
+                // Color gradient text:
+                background: "linear-gradient(90deg, #4F46E5 0%, #9333EA 100%)",
                 color: "transparent",
                 backgroundClip: "text",
               }}
